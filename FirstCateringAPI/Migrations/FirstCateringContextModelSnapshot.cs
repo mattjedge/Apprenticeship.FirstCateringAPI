@@ -4,16 +4,14 @@ using FirstCateringAPI.Core.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
-using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace FirstCateringAPI.Migrations
 {
     [DbContext(typeof(FirstCateringContext))]
-    [Migration("20190128145901_InitialCreate")]
-    partial class InitialCreate
+    partial class FirstCateringContextModelSnapshot : ModelSnapshot
     {
-        protected override void BuildTargetModel(ModelBuilder modelBuilder)
+        protected override void BuildModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -23,7 +21,7 @@ namespace FirstCateringAPI.Migrations
 
             modelBuilder.Entity("FirstCateringAPI.Core.Entities.Employee", b =>
                 {
-                    b.Property<int>("EmployeeId")
+                    b.Property<int>("pkAutoId")
                         .ValueGeneratedOnAdd()
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
@@ -32,6 +30,8 @@ namespace FirstCateringAPI.Migrations
                     b.Property<string>("EmailAddress")
                         .IsRequired()
                         .HasMaxLength(50);
+
+                    b.Property<int>("EmployeeId");
 
                     b.Property<string>("Forename")
                         .IsRequired()
@@ -47,31 +47,36 @@ namespace FirstCateringAPI.Migrations
                         .IsRequired()
                         .HasMaxLength(25);
 
-                    b.HasKey("EmployeeId");
-
-                    b.HasIndex("CardId")
-                        .IsUnique();
+                    b.HasKey("pkAutoId");
 
                     b.ToTable("Employees");
                 });
 
             modelBuilder.Entity("FirstCateringAPI.Core.Entities.MembershipCard", b =>
                 {
-                    b.Property<Guid>("CardId")
-                        .ValueGeneratedOnAdd();
+                    b.Property<int>("pkCardAutoId")
+                        .ValueGeneratedOnAdd()
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<decimal>("CurrentBalance");
+                    b.Property<Guid>("CardId");
 
-                    b.HasKey("CardId");
+                    b.Property<decimal>("CurrentBalance")
+                        .HasColumnType("decimal(10,2)");
+
+                    b.HasKey("pkCardAutoId");
+
+                    b.HasIndex("CardId")
+                        .IsUnique();
 
                     b.ToTable("MembershipCards");
                 });
 
-            modelBuilder.Entity("FirstCateringAPI.Core.Entities.Employee", b =>
+            modelBuilder.Entity("FirstCateringAPI.Core.Entities.MembershipCard", b =>
                 {
-                    b.HasOne("FirstCateringAPI.Core.Entities.MembershipCard", "MembershipCard")
-                        .WithOne("Employee")
-                        .HasForeignKey("FirstCateringAPI.Core.Entities.Employee", "CardId")
+                    b.HasOne("FirstCateringAPI.Core.Entities.Employee", "Employee")
+                        .WithOne("MembershipCard")
+                        .HasForeignKey("FirstCateringAPI.Core.Entities.MembershipCard", "CardId")
+                        .HasPrincipalKey("FirstCateringAPI.Core.Entities.Employee", "CardId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 #pragma warning restore 612, 618

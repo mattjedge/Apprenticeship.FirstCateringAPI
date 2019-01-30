@@ -1,4 +1,5 @@
 ﻿using FirstCateringAPI.Core.Dtos.LinksAndWrappers;
+using FirstCateringAPI.Core.Entities;
 using System;
 
 namespace FirstCateringAPI.Core.Dtos.Cards

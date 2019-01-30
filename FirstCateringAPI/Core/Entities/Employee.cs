@@ -7,6 +7,8 @@ namespace FirstCateringAPI.Core.Entities
     public class Employee
     {
         [Key]
+        public int pkAutoId { get; set; }
+
         public int EmployeeId { get; set; }
 
         [Required,MaxLength(25)]

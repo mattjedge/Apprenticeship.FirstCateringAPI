@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Text;
 using AutoMapper;
 using FirstCateringAPI.BusinessLogic.Contracts;
 using FirstCateringAPI.BusinessLogic.Implementations;
@@ -14,7 +10,6 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.AspNetCore.Mvc.Routing;
@@ -22,8 +17,6 @@ using Microsoft.AspNetCore.Mvc.Versioning;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Swashbuckle.AspNetCore.Swagger;
 
@@ -77,7 +70,8 @@ namespace FirstCateringAPI
                     "FirstCateringLtd", new Info
                     {
                         Title = "First Catering Ltd API",
-                        Description = "A common web service for First Catering Ltd that allows Bows Formula One employees to use their cards in the existing kiosks to register and top up with money."
+                        Description = "A common web service for First Catering Ltd that allows Bows Formula One employees " +
+                                         "to use their cards in the existing kiosks to register and top up with money."      
                     });
             });
 
@@ -85,6 +79,7 @@ namespace FirstCateringAPI
             {
                 config.AddProfile(new MappingProfile());
             });
+
             IMapper mapper = mappingConfig.CreateMapper();
             services.AddSingleton(mapper);
 

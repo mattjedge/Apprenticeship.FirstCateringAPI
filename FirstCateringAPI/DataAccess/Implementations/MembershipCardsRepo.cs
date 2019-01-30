@@ -1,10 +1,9 @@
 ﻿using FirstCateringAPI.Core.Context;
 using FirstCateringAPI.Core.Entities;
 using FirstCateringAPI.DataAccess.Contracts;
+using Microsoft.EntityFrameworkCore;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 
 namespace FirstCateringAPI.DataAccess.Implementations
 {
@@ -19,7 +18,8 @@ namespace FirstCateringAPI.DataAccess.Implementations
 
         public MembershipCard GetMembershipCard(Guid cardId)
         {
-            return _dbContext.MembershipCards.Single(x => x.CardId == cardId);
+            var membershipCard = _dbContext.MembershipCards.Single(x => x.CardId == cardId);
+            return membershipCard;
         }
 
         public bool MembershipCardExists(Guid cardId)
@@ -30,6 +30,12 @@ namespace FirstCateringAPI.DataAccess.Implementations
         public Employee GetCardOwner(Guid cardId)
         {
             return _dbContext.Employees.Single(x => x.CardId == cardId);
+        }
+
+        public void UpdateMembershipCard(MembershipCard membershipCard)
+        {
+            _dbContext.MembershipCards.Update(membershipCard);
+            _dbContext.Entry(membershipCard).State = EntityState.Modified;
         }
     }
 }

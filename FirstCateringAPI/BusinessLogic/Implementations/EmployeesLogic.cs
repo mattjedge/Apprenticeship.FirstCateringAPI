@@ -27,11 +27,11 @@ namespace FirstCateringAPI.BusinessLogic.Implementations
             return _repo.EmployeeIdExists(employeeId);
         }
 
-        public bool RegisterEmployee(RegisterEmployeeDto employee)
+        public void RegisterEmployee(RegisterEmployeeDto employee)
         {
             var employeeToAdd = _mapper.Map<Employee>(employee);            
 
-            return _repo.AddNewEmployee(employeeToAdd);
+            _repo.AddNewEmployee(employeeToAdd);
         }
 
         public EmployeeDto GetEmployee(int employeeId)
@@ -52,12 +52,13 @@ namespace FirstCateringAPI.BusinessLogic.Implementations
             return employeeLinksWrapper;
         }
 
-        public bool AuthorizedEmployee(EmployeeIdAndPINDto credentials)
+        public bool AuthorizedEmployee(EmployeeCredentialsDto credentials)
         {
             var employeeId = credentials.EmployeeId;
             var pinNumber = credentials.PINNumber;
+            var cardId = credentials.CardId;
 
-            return _repo.AuthorizedEmployee(employeeId, pinNumber);
+            return _repo.AuthorizedEmployee(employeeId, pinNumber, cardId);
         }
     }
 }

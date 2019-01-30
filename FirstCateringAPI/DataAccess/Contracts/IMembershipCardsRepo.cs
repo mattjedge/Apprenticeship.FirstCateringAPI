@@ -10,5 +10,7 @@ namespace FirstCateringAPI.DataAccess.Contracts
         MembershipCard GetMembershipCard(Guid cardId);
 
         Employee GetCardOwner(Guid cardId);
+
+        void UpdateMembershipCard(MembershipCard membershipCard);
     }
 }

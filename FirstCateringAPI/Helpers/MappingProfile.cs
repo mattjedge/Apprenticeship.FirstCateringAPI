@@ -17,6 +17,7 @@ namespace FirstCateringAPI.Helpers
             CreateMap<MembershipCardOwnerDto, MembershipCardOwnerLinksDto>();
             CreateMap<MembershipCard, MembershipCardDto>();
             CreateMap<MembershipCardDto, MembershipCardLinksDto>();
+
         }
     }
 }

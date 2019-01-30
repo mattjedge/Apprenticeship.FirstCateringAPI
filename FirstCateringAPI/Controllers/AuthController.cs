@@ -46,7 +46,7 @@ namespace FirstCateringAPI.Controllers
 
             var tokenString = new JwtSecurityTokenHandler().WriteToken(token);
 
-            return Ok(tokenString);
+            return Ok(new { token = tokenString });
         }
     }
 }

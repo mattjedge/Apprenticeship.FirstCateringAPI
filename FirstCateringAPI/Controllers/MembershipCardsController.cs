@@ -50,10 +50,43 @@ namespace FirstCateringAPI.Controllers
         }
 
 
-        [HttpPut("{cardId}/TopUp")]
-        public IActionResult TopUp()
+        [HttpPut("{cardId}/AddCredit")]
+        //[ProducesResponseType(typeof(MembershipCardDto),200)]
+        //[ProducesResponseType(404)]
+        //[Produces("application/json", "application/vnd.catering.hateoas+json")]
+        public IActionResult AddCredit([FromHeader(Name ="Accept")]string acceptType, [FromBody]UpdateBalanceDto credit)
         {
-            return Ok();
+            var hateoasHeader = _config.GetValue<string>("AppSettings:HateoasAcceptType");
+            var acceptTypes = acceptType.Split(", ");
+                    
+            if ( !_cardLogic.MembershipCardExists(credit.CardId))
+            {
+                return NotFound($"Could not find a membership card with Id {credit.CardId}");
+            }
+
+            // check employee id and pin no match (not authorized)
+            // ?????
+
+            // update credit
+            _cardLogic.AddCredit(credit);
+
+            // if save fails exception (500)
+            if (!_cardLogic.Save())
+            {
+                throw new Exception($"Adding {credit.Credit} credit failed on save.");
+            }
+
+            // get membership card
+            var cardToReturn = _cardLogic.GetMembershipCard(credit.CardId);
+
+            if (acceptTypes.Contains(hateoasHeader))
+            {
+                var hateoasMembershipCard = _cardLogic.AddHateoasLinks(cardToReturn);
+
+                return Ok(hateoasMembershipCard);
+            }
+            
+            return Ok(cardToReturn);
         }
 
         

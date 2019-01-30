@@ -6,6 +6,8 @@ namespace FirstCateringAPI.Core.Entities
     public class MembershipCard
     {
         [Key]
+        public int pkCardAutoId { get; set; }
+
         public Guid CardId { get; set; }
 
         [Required]

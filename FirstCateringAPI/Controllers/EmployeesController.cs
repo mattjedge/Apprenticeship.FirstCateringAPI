@@ -25,25 +25,25 @@ namespace FirstCateringAPI.Controllers
 
        
         [HttpPost("{employeeId}/Login",Name ="Login")]
-        public IActionResult Login([FromHeader(Name="Authorization")]string authHeader, int employeeId, [FromBody]EmployeeIdAndPINDto credentials)
+        public IActionResult Login(int employeeId, [FromBody]EmployeeCredentialsDto credentials)
         {
             var employee = _employeeLogic.GetEmployee(employeeId);
             
             if (employee == null)
             {
-                return NotFound($"No employee with Employee Id {employeeId} was found.");
+                return NotFound(new { warning = $"No employee with Employee Id {employeeId} was found." });
             }
 
             if (_employeeLogic.AuthorizedEmployee(credentials))
             {
                 var employeeName = employee.Forename;
                 var welcomeString = $"Welcome, {employeeName}";
-
-                return Ok(welcomeString);
+                
+                return Ok(new { welcome = welcomeString });
             }
             else
             {
-                return BadRequest("Unable to authenticate employee");
+                return BadRequest(new { warning = "Unable to authenticate employee" });
             }
         }
 
@@ -56,12 +56,13 @@ namespace FirstCateringAPI.Controllers
 
             if (employee == null)
             {
-                return NotFound($"No employee with Employee Id {employeeId} was found.");
+                return NotFound(new { warning = $"No employee with Employee Id {employeeId} was found." });
             }
 
             var employeeName = employee.Forename;
             var farewellString = $"Goodbye, {employeeName}.";
-            return Ok(farewellString);
+
+            return Ok(new { farewell = farewellString });
         }
 
 
@@ -77,10 +78,10 @@ namespace FirstCateringAPI.Controllers
             var hateoasHeader = _config.GetValue<string>("AppSettings:HateoasAcceptType");
             string[] acceptTypes = acceptMediaTypes.Split(", ");
 
-            if (contentType != "application/json")
-            {
-                return StatusCode(415); // unsupported mediatype, forcing consumer to use json (for simplicity)
-            }
+            //if (contentType != "application/json")
+            //{
+            //    return StatusCode(415); // unsupported mediatype, forcing consumer to use json (for simplicity)
+            //}
 
             if (!ModelState.IsValid)
             {
@@ -89,15 +90,16 @@ namespace FirstCateringAPI.Controllers
 
             if (_employeeLogic.EmployeeIdExists(employeeToRegister.EmployeeId))
             {
-                return BadRequest("Provided EmployeeId already exists in the system.");
+                return BadRequest(new { error = "Provided EmployeeId already exists in the system." });
             }
 
-            if (!_employeeLogic.RegisterEmployee(employeeToRegister))
+            _employeeLogic.RegisterEmployee(employeeToRegister);
+
+            if (!_employeeLogic.Save())
             {
                 throw new Exception("Registering user failed on save");
             }
-
-            // return ok? return no content? return CreatedAtRoute?
+                       
             var employeeToReturn = _employeeLogic.GetEmployee(employeeToRegister.EmployeeId);
 
             if (acceptTypes.Contains(hateoasHeader))

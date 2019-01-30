@@ -5,7 +5,7 @@ namespace FirstCateringAPI.BusinessLogic.Contracts
 {
     public interface IEmployeesLogic : IBaseLogic
     {
-        bool RegisterEmployee(RegisterEmployeeDto employeeToRegister);
+        void RegisterEmployee(RegisterEmployeeDto employeeToRegister);
 
         bool EmployeeIdExists(int employeeId);        
 
@@ -13,6 +13,6 @@ namespace FirstCateringAPI.BusinessLogic.Contracts
 
         EmployeeLinksDto AddHateoasLinks(EmployeeDto employee);
 
-        bool AuthorizedEmployee(EmployeeIdAndPINDto credentials);
+        bool AuthorizedEmployee(EmployeeCredentialsDto credentials);
     }
 }

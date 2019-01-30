@@ -11,14 +11,12 @@ namespace FirstCateringAPI.BusinessLogic.Implementations
     public class MembershipCardLogic : BaseLogic, IMembershipCardLogic
     {
         private readonly IMembershipCardsRepo _repo;
-        private readonly IEmployeesRepo _employeesRepo;
         private readonly IMapper _mapper;
         private readonly IUrlHelper _urlHelper;
 
-        public MembershipCardLogic(IMembershipCardsRepo repo, IEmployeesRepo empRepo, IMapper mapper, IUrlHelper urlHelper) : base(repo)
+        public MembershipCardLogic(IMembershipCardsRepo repo, IMapper mapper, IUrlHelper urlHelper) : base(repo)
         {
             _repo = repo;
-            _employeesRepo = empRepo;
             _mapper = mapper;
             _urlHelper = urlHelper;
         }
@@ -50,6 +48,7 @@ namespace FirstCateringAPI.BusinessLogic.Implementations
         public MembershipCardDto GetMembershipCard(Guid cardId)
         {           
             var membershipCard = _repo.GetMembershipCard(cardId);
+           // membershipCard.Employee = _repo.GetCardOwner(cardId);
 
             return _mapper.Map<MembershipCardDto>(membershipCard);
         }
@@ -57,6 +56,15 @@ namespace FirstCateringAPI.BusinessLogic.Implementations
         public bool MembershipCardExists(Guid cardId)
         {
             return _repo.MembershipCardExists(cardId);
+        }
+
+        public void AddCredit(UpdateBalanceDto updateBalanceDto)
+        {
+            var membershipCard = _repo.GetMembershipCard(updateBalanceDto.CardId);
+
+            membershipCard.CurrentBalance += updateBalanceDto.Credit;
+
+            _repo.UpdateMembershipCard(membershipCard);
         }
     }
 }

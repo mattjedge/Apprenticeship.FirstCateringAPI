@@ -2,6 +2,7 @@
 using FirstCateringAPI.Core.Entities;
 using FirstCateringAPI.DataAccess.Contracts;
 using Microsoft.EntityFrameworkCore;
+using System;
 using System.Linq;
 
 namespace FirstCateringAPI.DataAccess.Implementations
@@ -15,7 +16,7 @@ namespace FirstCateringAPI.DataAccess.Implementations
             _dbContext = dbContext;
         }
 
-        public bool AddNewEmployee(Employee employee)
+        public void AddNewEmployee(Employee employee)
         {
             
             _dbContext.Employees.Add(employee);
@@ -29,30 +30,11 @@ namespace FirstCateringAPI.DataAccess.Implementations
 
             _dbContext.MembershipCards.Add(memberCard);
             _dbContext.Entry(memberCard).State = EntityState.Added;
-
-            _dbContext.Database.OpenConnection();
-            try
-            {
-                _dbContext.Database.ExecuteSqlCommand("SET IDENTITY_INSERT dbo.Employees ON");
-                _dbContext.SaveChanges();
-                _dbContext.Database.ExecuteSqlCommand("SET IDENTITY_INSERT dbo.Employees OFF");
-                return true;
-            }
-            catch
-            {
-                return false;
-            }
-            finally
-            {
-                _dbContext.Database.CloseConnection();
-            }
-            
-            
         }
 
-        public bool AuthorizedEmployee(int employeeId, int pinNumber)
+        public bool AuthorizedEmployee(int employeeId, int pinNumber, Guid cardId)
         {
-            return _dbContext.Employees.Where(x => x.EmployeeId == employeeId && x.PINNumber == pinNumber).Any();
+            return _dbContext.Employees.Where(x => x.EmployeeId == employeeId && x.PINNumber == pinNumber && x.CardId == cardId).Any();
         }
 
         public bool EmployeeIdExists(int employeeId)

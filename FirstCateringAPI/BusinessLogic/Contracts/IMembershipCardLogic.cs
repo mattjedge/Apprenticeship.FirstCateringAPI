@@ -3,7 +3,7 @@ using System;
 
 namespace FirstCateringAPI.BusinessLogic.Contracts
 {
-    public interface IMembershipCardLogic
+    public interface IMembershipCardLogic : IBaseLogic
     {
         bool MembershipCardExists(Guid cardId);
 
@@ -14,5 +14,7 @@ namespace FirstCateringAPI.BusinessLogic.Contracts
         MembershipCardLinksDto AddHateoasLinks(MembershipCardDto membershipCard);
 
         MembershipCardDto GetMembershipCard(Guid cardId);
+
+        void AddCredit(UpdateBalanceDto membershipCard);
     }
 }
