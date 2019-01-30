@@ -42,7 +42,7 @@ namespace FirstCateringAPI.Migrations
                         .HasMaxLength(20);
 
                     b.Property<string>("PINNumber")
-                        .HasMaxLength(4);
+                        .IsRequired();
 
                     b.Property<string>("Surname")
                         .IsRequired()

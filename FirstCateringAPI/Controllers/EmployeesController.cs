@@ -22,8 +22,6 @@ namespace FirstCateringAPI.Controllers
             _config = config;
         }
 
-
-       
         [HttpPost("{employeeId}/Login",Name ="Login")]
         public IActionResult Login(int employeeId, [FromBody]EmployeeCredentialsDto credentials)
         {
@@ -31,7 +29,7 @@ namespace FirstCateringAPI.Controllers
             
             if (employee == null)
             {
-                return NotFound(new { warning = $"No employee with Employee Id {employeeId} was found." });
+                return NotFound(new { message = $"No employee with Employee Id {employeeId} was found." });
             }
 
             if (_employeeLogic.AuthorizedEmployee(credentials))
@@ -43,11 +41,10 @@ namespace FirstCateringAPI.Controllers
             }
             else
             {
-                return BadRequest(new { warning = "Unable to authenticate employee" });
+                return BadRequest(new { message = "Unable to authenticate employee" });
             }
         }
-
-
+        
 
         [HttpPost("{employeeId}/Logout")]
         public IActionResult Logout(int employeeId)
@@ -56,7 +53,7 @@ namespace FirstCateringAPI.Controllers
 
             if (employee == null)
             {
-                return NotFound(new { warning = $"No employee with Employee Id {employeeId} was found." });
+                return NotFound(new { message = $"No employee with Employee Id {employeeId} was found." });
             }
 
             var employeeName = employee.Forename;
@@ -64,8 +61,7 @@ namespace FirstCateringAPI.Controllers
 
             return Ok(new { farewell = farewellString });
         }
-
-
+        
 
         [HttpPost("Register",Name ="Register")]
         [ProducesResponseType(typeof(EmployeeDto),201)]
@@ -90,7 +86,7 @@ namespace FirstCateringAPI.Controllers
 
             if (_employeeLogic.EmployeeIdExists(employeeToRegister.EmployeeId))
             {
-                return BadRequest(new { error = "Provided EmployeeId already exists in the system." });
+                return BadRequest(new { message = "Provided EmployeeId already exists in the system." });
             }
 
             _employeeLogic.RegisterEmployee(employeeToRegister);
@@ -110,8 +106,7 @@ namespace FirstCateringAPI.Controllers
 
             return CreatedAtRoute("GetEmployee", new { employeeToReturn.EmployeeId }, employeeToReturn);
         }
-
-
+        
 
         [HttpGet("{employeeId}",Name ="GetEmployee")]
         [Produces("application/vnd.catering.hateoas+json", "application/json")]
@@ -122,8 +117,8 @@ namespace FirstCateringAPI.Controllers
 
             if (employeeDto == null)
             {
-                return NotFound();
-            }
+                return NotFound(new { message = $"No employee with Employee Id {employeeId} was found." });
+                }
 
             string[] acceptTypes = acceptMediaTypes.Split(", ");
 
@@ -136,6 +131,26 @@ namespace FirstCateringAPI.Controllers
             }
 
             return Ok(employeeDto);
+        }
+
+        [HttpDelete("{employeeId}", Name = "DeleteEmployee")]
+        public IActionResult DeleteEmployee(int employeeId)
+        {
+            var employeeToDelete = _employeeLogic.GetEmployee(employeeId);
+
+            if (employeeToDelete == null)
+            {
+                return NotFound(new { message = $"EmployeeId {employeeId} not found in the system." });
+            }
+
+            _employeeLogic.DeleteEmployee(employeeId);
+
+            if (!_employeeLogic.Save())
+            {
+                throw new Exception($"Deleting employee with Id {employeeId} failed on save.");
+            }
+
+            return NoContent();
         }
     }
 }

@@ -1,5 +1,4 @@
 ﻿using FirstCateringAPI.Core.Dtos.Employees;
-using System;
 
 namespace FirstCateringAPI.BusinessLogic.Contracts
 {
@@ -14,5 +13,7 @@ namespace FirstCateringAPI.BusinessLogic.Contracts
         EmployeeLinksDto AddHateoasLinks(EmployeeDto employee);
 
         bool AuthorizedEmployee(EmployeeCredentialsDto credentials);
+             
+        void DeleteEmployee(int employeeId);
     }
 }

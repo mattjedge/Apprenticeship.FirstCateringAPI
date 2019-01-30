@@ -5,6 +5,7 @@ using FirstCateringAPI.Core.Dtos.LinksAndWrappers;
 using FirstCateringAPI.Core.Entities;
 using FirstCateringAPI.DataAccess.Contracts;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
 using System;
 
 namespace FirstCateringAPI.BusinessLogic.Implementations
@@ -14,12 +15,16 @@ namespace FirstCateringAPI.BusinessLogic.Implementations
         private readonly IEmployeesRepo _repo;
         private readonly IMapper _mapper;
         private readonly IUrlHelper _urlHelper;
+        private readonly IEncryption _encryption;
+        private readonly IConfiguration _config;
 
-        public EmployeesLogic(IEmployeesRepo repo, IMapper mapper, IUrlHelper urlHelper) : base(repo)
+        public EmployeesLogic(IEmployeesRepo repo, IEncryption encryption, IMapper mapper, IUrlHelper urlHelper, IConfiguration config) : base(repo)
         {
             _repo = repo;
             _mapper = mapper;
             _urlHelper = urlHelper;
+            _encryption = encryption;
+            _config = config;
         }
 
         public bool EmployeeIdExists(int employeeId)
@@ -27,12 +32,18 @@ namespace FirstCateringAPI.BusinessLogic.Implementations
             return _repo.EmployeeIdExists(employeeId);
         }
 
+
         public void RegisterEmployee(RegisterEmployeeDto employee)
         {
-            var employeeToAdd = _mapper.Map<Employee>(employee);            
+            var pinEncryptKey = _config.GetValue<string>("AppSettings:Secrets:PinEncryptKey");
+
+            employee.PINNumber = _encryption.EncryptString(employee.PINNumber, pinEncryptKey);
+
+            var employeeToAdd = _mapper.Map<Employee>(employee);
 
             _repo.AddNewEmployee(employeeToAdd);
         }
+
 
         public EmployeeDto GetEmployee(int employeeId)
         {
@@ -41,6 +52,7 @@ namespace FirstCateringAPI.BusinessLogic.Implementations
 
             return employeeDto;
         }
+
 
         public EmployeeLinksDto AddHateoasLinks(EmployeeDto employee)
         {
@@ -52,13 +64,32 @@ namespace FirstCateringAPI.BusinessLogic.Implementations
             return employeeLinksWrapper;
         }
 
+
         public bool AuthorizedEmployee(EmployeeCredentialsDto credentials)
         {
+            var pinEncryptKey = _config.GetValue<string>("AppSettings:Secrets:PinEncryptKey");
+
             var employeeId = credentials.EmployeeId;
             var pinNumber = credentials.PINNumber;
             var cardId = credentials.CardId;
 
+            var employee = _repo.GetEmployee(employeeId);
+            var decryptedPIN = _encryption.DecryptString(employee.PINNumber, pinEncryptKey);
+
+            if (decryptedPIN == pinNumber)
+            {
+                pinNumber = employee.PINNumber;
+            }
+
             return _repo.AuthorizedEmployee(employeeId, pinNumber, cardId);
+        }
+
+
+        public void DeleteEmployee(int employeeId)
+        {
+            var employee = _repo.GetEmployee(employeeId);
+
+            _repo.DeleteEmployee(employee);
         }
     }
 }

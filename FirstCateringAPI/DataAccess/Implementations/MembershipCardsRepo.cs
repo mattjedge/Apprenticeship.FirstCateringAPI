@@ -18,19 +18,21 @@ namespace FirstCateringAPI.DataAccess.Implementations
 
         public MembershipCard GetMembershipCard(Guid cardId)
         {
-            var membershipCard = _dbContext.MembershipCards.Single(x => x.CardId == cardId);
-            return membershipCard;
+            return _dbContext.MembershipCards.SingleOrDefault(x => x.CardId == cardId);
         }
+
 
         public bool MembershipCardExists(Guid cardId)
         {
             return _dbContext.MembershipCards.Where(x => x.CardId == cardId).Any();
         }
 
+
         public Employee GetCardOwner(Guid cardId)
         {
             return _dbContext.Employees.Single(x => x.CardId == cardId);
         }
+
 
         public void UpdateMembershipCard(MembershipCard membershipCard)
         {

@@ -94,6 +94,7 @@ namespace FirstCateringAPI
 
             services.AddScoped<IBaseLogic, BaseLogic>();
             services.AddScoped<IRepository, Repository>();
+            services.AddScoped<IEncryption, Encryption>();
 
             services.AddScoped<IAuthLogic, AuthLogic>();
             services.AddScoped<IEmployeesLogic, EmployeesLogic>();
@@ -102,6 +103,7 @@ namespace FirstCateringAPI
             services.AddScoped<IEmployeesRepo, EmployeesRepo>();
             services.AddScoped<IMembershipCardsRepo, MembershipCardsRepo>();
         }
+
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)

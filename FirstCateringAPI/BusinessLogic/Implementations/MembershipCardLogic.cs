@@ -31,12 +31,14 @@ namespace FirstCateringAPI.BusinessLogic.Implementations
             
         }
 
+
         public MembershipCardLinksDto AddHateoasLinks(MembershipCardDto membershipCard)
         {
             var membershipCardLinksDto = _mapper.Map<MembershipCardLinksDto>(membershipCard);
 
             return membershipCardLinksDto;
         }
+
 
         public MembershipCardOwnerDto GetCardAndOwnerId(Guid cardId)
         {
@@ -45,18 +47,20 @@ namespace FirstCateringAPI.BusinessLogic.Implementations
             return _mapper.Map<MembershipCardOwnerDto>(cardAndOwner);
         }
 
+
         public MembershipCardDto GetMembershipCard(Guid cardId)
         {           
             var membershipCard = _repo.GetMembershipCard(cardId);
-           // membershipCard.Employee = _repo.GetCardOwner(cardId);
 
             return _mapper.Map<MembershipCardDto>(membershipCard);
         }
+
 
         public bool MembershipCardExists(Guid cardId)
         {
             return _repo.MembershipCardExists(cardId);
         }
+
 
         public void AddCredit(UpdateBalanceDto updateBalanceDto)
         {

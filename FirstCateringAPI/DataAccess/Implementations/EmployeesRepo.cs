@@ -1,4 +1,5 @@
-﻿using FirstCateringAPI.Core.Context;
+﻿using FirstCateringAPI.BusinessLogic.Contracts;
+using FirstCateringAPI.Core.Context;
 using FirstCateringAPI.Core.Entities;
 using FirstCateringAPI.DataAccess.Contracts;
 using Microsoft.EntityFrameworkCore;
@@ -32,19 +33,28 @@ namespace FirstCateringAPI.DataAccess.Implementations
             _dbContext.Entry(memberCard).State = EntityState.Added;
         }
 
+
         public bool AuthorizedEmployee(int employeeId, string pinNumber, Guid cardId)
         {
             return _dbContext.Employees.Where(x => x.EmployeeId == employeeId && x.PINNumber == pinNumber && x.CardId == cardId).Any();
         }
+
 
         public bool EmployeeIdExists(int employeeId)
         {
             return _dbContext.Employees.Where(x => x.EmployeeId == employeeId).Any();
         }
 
+
         public Employee GetEmployee(int employeeId)
         {
-            return _dbContext.Employees.SingleOrDefault(x => x.EmployeeId == employeeId);
+            return _dbContext.Employees.AsNoTracking().SingleOrDefault(x => x.EmployeeId == employeeId);
+        }
+
+        public void DeleteEmployee(Employee employee)
+        {
+            _dbContext.Employees.Remove(employee);
+            _dbContext.Entry(employee).State = EntityState.Deleted;
         }
     }
 }

@@ -12,6 +12,7 @@ namespace FirstCateringAPI.Helpers
             CreateMap<RegisterEmployeeDto,Employee>();
             CreateMap<Employee, EmployeeDto>();
             CreateMap<EmployeeDto, EmployeeLinksDto>();
+            CreateMap<EmployeeDto, Employee>();
 
             CreateMap<MembershipCard, MembershipCardOwnerDto>();
             CreateMap<MembershipCardOwnerDto, MembershipCardOwnerLinksDto>();

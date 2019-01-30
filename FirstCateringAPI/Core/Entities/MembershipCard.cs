@@ -8,10 +8,10 @@ namespace FirstCateringAPI.Core.Entities
         [Key]
         public int pkCardAutoId { get; set; }
 
+        [Required]
         public Guid CardId { get; set; }
 
         [Required]
-        [RegularExpression(@"^\d+.?\d{0,2}$")] // two decimal points
         public decimal CurrentBalance { get; set; }
         
         public Employee Employee { get; set; }

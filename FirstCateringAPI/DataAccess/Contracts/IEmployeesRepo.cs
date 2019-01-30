@@ -12,5 +12,7 @@ namespace FirstCateringAPI.DataAccess.Contracts
         Employee GetEmployee(int employeeId);
 
         bool AuthorizedEmployee(int employeeId, string PINNumber, Guid cardId);
+
+        void DeleteEmployee(Employee employee);
     }
 }

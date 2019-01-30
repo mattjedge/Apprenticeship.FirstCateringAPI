@@ -23,7 +23,6 @@ namespace FirstCateringAPI.Controllers
             _config = config;
         }
 
-
         [HttpGet("{cardId}/Verify")]
         [ProducesResponseType(404)]
         [ProducesResponseType(typeof(MembershipCardOwnerDto),200)]
@@ -35,7 +34,7 @@ namespace FirstCateringAPI.Controllers
 
             if (!_cardLogic.MembershipCardExists(cardId))
             {
-                return NotFound("Membership card not found.");
+                return NotFound(new { message = "Membership card not found." });
             }
 
             var cardAndOwner = _cardLogic.GetCardAndOwnerId(cardId);
@@ -51,32 +50,36 @@ namespace FirstCateringAPI.Controllers
 
 
         [HttpPut("{cardId}/AddCredit")]
-        //[ProducesResponseType(typeof(MembershipCardDto),200)]
-        //[ProducesResponseType(404)]
-        //[Produces("application/json", "application/vnd.catering.hateoas+json")]
+        [ProducesResponseType(typeof(MembershipCardDto),200)]
+        [ProducesResponseType(404)]
+        [Produces("application/json", "application/vnd.catering.hateoas+json")]
         public IActionResult AddCredit([FromHeader(Name ="Accept")]string acceptType, [FromBody]UpdateBalanceDto credit)
         {
             var hateoasHeader = _config.GetValue<string>("AppSettings:HateoasAcceptType");
             var acceptTypes = acceptType.Split(", ");
+
+            if (credit == null)
+            {
+                return BadRequest(new { message = "Unable to process body." });
+            }
                     
             if ( !_cardLogic.MembershipCardExists(credit.CardId))
             {
-                return NotFound($"Could not find a membership card with Id {credit.CardId}");
+                return NotFound(new { message = "Membership card not found." });
             }
+
 
             // check employee id and pin no match (not authorized)
             // ?????
 
             // update credit
             _cardLogic.AddCredit(credit);
-
-            // if save fails exception (500)
+           
             if (!_cardLogic.Save())
             {
-                throw new Exception($"Adding {credit.Credit} credit failed on save.");
+                throw new Exception($"Adding £{credit.Credit} credit failed on save.");
             }
 
-            // get membership card
             var cardToReturn = _cardLogic.GetMembershipCard(credit.CardId);
 
             if (acceptTypes.Contains(hateoasHeader))
@@ -100,7 +103,7 @@ namespace FirstCateringAPI.Controllers
 
             if (card == null)
             {
-                return BadRequest();
+                return NotFound( new { message = "Membership card not found" });
             }
 
             if (acceptTypes.Contains(hateoasHeader))

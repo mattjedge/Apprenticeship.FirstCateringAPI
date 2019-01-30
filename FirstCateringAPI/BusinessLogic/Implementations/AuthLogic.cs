@@ -26,6 +26,7 @@ namespace FirstCateringAPI.BusinessLogic.Implementations
             return (username == storedUsername && password == storedPassword);
         }
 
+
         public JwtSecurityToken CreateSecurityToken(string username)
         {
             var securityKey = _config.GetValue<string>("AppSettings:Secrets:SecurityKey");
@@ -51,6 +52,7 @@ namespace FirstCateringAPI.BusinessLogic.Implementations
 
             return token;
         }
+
 
         public string[] GetUsernameAndPassword(string authHeader)
         {
