@@ -10,7 +10,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace FirstCateringAPI.Migrations
 {
     [DbContext(typeof(FirstCateringContext))]
-    [Migration("20190129155616_InitialCreate")]
+    [Migration("20190130103531_InitialCreate")]
     partial class InitialCreate
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -43,7 +43,8 @@ namespace FirstCateringAPI.Migrations
                         .IsRequired()
                         .HasMaxLength(20);
 
-                    b.Property<int>("PINNumber");
+                    b.Property<string>("PINNumber")
+                        .HasMaxLength(4);
 
                     b.Property<string>("Surname")
                         .IsRequired()

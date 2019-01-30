@@ -23,8 +23,8 @@ namespace FirstCateringAPI.Core.Entities
         [Required,MaxLength(20)]
         public string MobileNumber { get; set; }
 
-        [RegularExpression(@"\d{4}")]
-        public int PINNumber { get; set; }
+        [MaxLength(4),RegularExpression("^[0-9]*$", ErrorMessage ="PIN Number must be four digits long")]
+        public string PINNumber { get; set; }
 
         [ForeignKey("CardId")]
         public MembershipCard MembershipCard { get; set; }

@@ -15,7 +15,7 @@ namespace FirstCateringAPI.Core.Dtos.Cards
         [RegularExpression(@"^\d+.?\d{0,2}$")]
         public decimal Credit { get; set; }
 
-        [RegularExpression(@"\d{4}")]
-        public int PINNumber { get; set; }
+        [MaxLength(4),RegularExpression("^[0-9]*$", ErrorMessage ="PIN Number must be four digits long")]
+        public string PINNumber { get; set; }
     }
 }

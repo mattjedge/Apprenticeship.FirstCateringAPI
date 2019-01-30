@@ -32,7 +32,7 @@ namespace FirstCateringAPI.DataAccess.Implementations
             _dbContext.Entry(memberCard).State = EntityState.Added;
         }
 
-        public bool AuthorizedEmployee(int employeeId, int pinNumber, Guid cardId)
+        public bool AuthorizedEmployee(int employeeId, string pinNumber, Guid cardId)
         {
             return _dbContext.Employees.Where(x => x.EmployeeId == employeeId && x.PINNumber == pinNumber && x.CardId == cardId).Any();
         }

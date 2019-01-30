@@ -19,7 +19,7 @@ namespace FirstCateringAPI.Migrations
                     Surname = table.Column<string>(maxLength: 25, nullable: false),
                     EmailAddress = table.Column<string>(maxLength: 50, nullable: false),
                     MobileNumber = table.Column<string>(maxLength: 20, nullable: false),
-                    PINNumber = table.Column<int>(nullable: false),
+                    PINNumber = table.Column<string>(maxLength: 4, nullable: true),
                     CardId = table.Column<Guid>(nullable: false)
                 },
                 constraints: table =>
