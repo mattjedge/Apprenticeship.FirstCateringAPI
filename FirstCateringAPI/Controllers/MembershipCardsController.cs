@@ -23,10 +23,9 @@ namespace FirstCateringAPI.Controllers
             _config = config;
         }
 
-        [HttpGet("{cardId}/Verify")]
-        [ProducesResponseType(404)]
-        [ProducesResponseType(typeof(MembershipCardOwnerDto),200)]
+        [HttpGet("{cardId}/Verify")]        
         [Produces("application/json", "application/vnd.catering.hateoas+json")]
+        [ProducesResponseType(404), ProducesResponseType(typeof(MembershipCardOwnerDto), 200)]
         public IActionResult VerifyCard([FromHeader(Name ="Accept")]string acceptHeader, Guid cardId)
         {
             var hateoasHeader = _config.GetValue<string>("AppSettings:HateoasAcceptType");
@@ -50,14 +49,13 @@ namespace FirstCateringAPI.Controllers
 
 
         [HttpPut("{cardId}/AddCredit")]
-        [ProducesResponseType(typeof(MembershipCardDto),200)]
-        [ProducesResponseType(404)]
         [Produces("application/json", "application/vnd.catering.hateoas+json")]
+        [ProducesResponseType(typeof(MembershipCardDto),200), ProducesResponseType(404), ProducesResponseType(400), ProducesResponseType(401)]
         public IActionResult AddCredit(Guid cardId, [FromHeader(Name ="Accept")]string acceptType, [FromBody]UpdateBalanceDto credit)
         {
             if (credit.CardId != cardId)
             {
-                return BadRequest();
+                return BadRequest( new { message = "URI Card ID and Body Card ID don't match." });
             }
 
             var hateoasHeader = _config.GetValue<string>("AppSettings:HateoasAcceptType");
@@ -99,6 +97,8 @@ namespace FirstCateringAPI.Controllers
 
         
         [HttpGet("{cardId}", Name = "GetMembershipCard")]
+        [Produces("application/json", "application/vnd.catering.hateoas+json")]
+        [ProducesResponseType(typeof(MembershipCardDto), 200), ProducesResponseType(404)]
         public IActionResult GetMembershipCard([FromHeader(Name ="Accept")] string acceptType, Guid cardId)
         {
             var hateoasHeader = _config.GetValue<string>("AppSettings:HateoasAcceptType");

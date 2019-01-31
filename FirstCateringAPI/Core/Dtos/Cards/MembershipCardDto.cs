@@ -7,6 +7,8 @@ namespace FirstCateringAPI.Core.Dtos.Cards
         public Guid CardId { get; set; }
                
         public decimal CurrentBalance { get; set; }
+
+        public int EmployeeId { get; set; }
         
     }
 }

@@ -41,6 +41,9 @@ namespace FirstCateringAPI.BusinessLogic.Implementations
         {
             var membershipCardLinksDto = _mapper.Map<MembershipCardLinksDto>(membershipCard);
 
+            membershipCardLinksDto.Links.Add(new LinkDto(_urlHelper.Link("AddCredit", new { cardId = membershipCard.CardId }), "add-funds", "PUT"));
+            membershipCardLinksDto.Links.Add(new LinkDto(_urlHelper.Link("GetEmployee", new { employeeId = membershipCard.EmployeeId }), "employee", "GET"));
+
             return membershipCardLinksDto;
         }
 
@@ -87,6 +90,7 @@ namespace FirstCateringAPI.BusinessLogic.Implementations
             {
                 return true;
             }
+
             else return false;
         }
     }

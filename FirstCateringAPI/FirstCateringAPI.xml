@@ -1,0 +1,44 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>FirstCateringAPI</name>
+    </assembly>
+    <members>
+        <member name="M:FirstCateringAPI.Controllers.AuthController.GetToken">
+            <summary>
+            User sends basic authorization header to generate a JwtBearer token which expires in one hour. Token is used for authentication for the rest of the end-points.
+            </summary>
+        </member>
+        <member name="M:FirstCateringAPI.Controllers.EmployeesController.Login(System.Int32,FirstCateringAPI.Core.Dtos.Employees.EmployeeCredentialsDto)">
+            <summary>
+            Method used to return a login welcome object - { "welcome": "Welcome, EmployeeForename." }
+            </summary>
+            <param name="employeeId">The ID of the employee</param>
+            <param name="credentials">A json object containing EmployeeId, PINNumber, and CardID </param>
+            <response code="200"> Successful login</response>
+            <response code="404"> No employee with matching ID found</response>
+            <response code="400"> Unable to authenticate employee (PIN / ID don't match) || EmployeeId parameter and EmployeeId in credentials don't match.</response>
+            <returns></returns>
+        </member>
+        <member name="M:FirstCateringAPI.Controllers.EmployeesController.Logout(System.Int32)">
+            <summary>
+            This method returns a personalised Goodbye object- { "farewell": "Goodbye, EmployeeForename" }.
+            </summary>
+            <param name="employeeId">The ID of the employee that wishes to log out.</param>
+            <response code="404"> No employee with matching ID found.</response>
+            <response code="200"> Logout message successful</response>
+            <returns></returns>
+        </member>
+        <member name="M:FirstCateringAPI.Controllers.EmployeesController.Register(System.String,System.String,FirstCateringAPI.Core.Dtos.Employees.RegisterEmployeeDto)">
+            <summary>
+            This method 
+            </summary>
+            <param name="contentType"></param>
+            <param name="acceptMediaTypes"> application/vnd.catering.hateoas+json will return an Employee object including links to
+            their membership card, self links, and delete links.</param>
+            <param name="employeeToRegister">This Json object must contain all employee details. See RegisterEmployeeDto object at the bottom of this page.</param>
+            <response code="201"></response>
+            <returns></returns>
+        </member>
+    </members>
+</doc>

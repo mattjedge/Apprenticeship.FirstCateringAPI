@@ -1,4 +1,7 @@
-﻿using System.Text;
+﻿using System;
+using System.IO;
+using System.Reflection;
+using System.Text;
 using AutoMapper;
 using FirstCateringAPI.BusinessLogic.Contracts;
 using FirstCateringAPI.BusinessLogic.Implementations;
@@ -75,6 +78,11 @@ namespace FirstCateringAPI
                         Description = "A common web service for First Catering Ltd that allows Bows Formula One employees " +
                                          "to use their cards in the existing kiosks to register and top up with money."      
                     });
+
+                var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.XML";
+                var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
+
+                setup.IncludeXmlComments(xmlPath);
             });
 
             var mappingConfig = new MapperConfiguration(config =>
@@ -121,7 +129,7 @@ namespace FirstCateringAPI
                     appBuilder.Run(async context =>
                     {
                         context.Response.StatusCode = 500;
-                        await context.Response.WriteAsync("Unexpected fault");
+                        await context.Response.WriteAsync("Unexpected server error");
                     });
                 });
             }
@@ -131,6 +139,7 @@ namespace FirstCateringAPI
             {
                 setupAction.SwaggerEndpoint("/swagger/FirstCateringLtd/swagger.json", "FirstCateringLtd");
                 setupAction.RoutePrefix = string.Empty;
+                setupAction.SupportedSubmitMethods();
             });
 
             app.UseHttpsRedirection();

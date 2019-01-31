@@ -20,6 +20,11 @@ namespace FirstCateringAPI.Controllers
             _logic = logic;
         }
 
+
+
+        /// <summary>
+        /// User sends basic authorization header to generate a JwtBearer token which expires in one hour. Token is used for authentication for the rest of the end-points.
+        /// </summary>
         [HttpPost("Token")]
         [ProducesResponseType(200),ProducesResponseType(401)]
         public IActionResult GetToken()

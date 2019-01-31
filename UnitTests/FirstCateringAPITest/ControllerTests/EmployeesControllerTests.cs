@@ -28,7 +28,8 @@ namespace UnitTests.FirstCateringAPITest.ControllerTests
         [Test]
         public void Employees_Login_Should_Call_GetEmployee()
         {
-            _classUnderTest.Login(It.IsAny<int>(), It.IsAny<EmployeeCredentialsDto>());
+            var employeeId = 10101;
+            _classUnderTest.Login(employeeId, new EmployeeCredentialsDto() { EmployeeId = employeeId});
 
             _mockEmployeeLogic.Verify(x => x.GetEmployee(It.IsAny<int>()), Times.Once);
         }
@@ -36,9 +37,10 @@ namespace UnitTests.FirstCateringAPITest.ControllerTests
         [Test]
         public void Employees_Login_Should_Call_AuthorizedEmployee()
         {
+            var employeeId = 10101;
             _mockEmployeeLogic.Setup(x => x.GetEmployee(It.IsAny<int>())).Returns(new EmployeeDto() { Forename = "Test" });
 
-            _classUnderTest.Login(It.IsAny<int>(), It.IsAny<EmployeeCredentialsDto>());
+            _classUnderTest.Login(employeeId, new EmployeeCredentialsDto() { EmployeeId = employeeId });
 
             _mockEmployeeLogic.Verify(x => x.AuthorizedEmployee(It.IsAny<EmployeeCredentialsDto>()), Times.Once);
         }
@@ -48,10 +50,11 @@ namespace UnitTests.FirstCateringAPITest.ControllerTests
         [Test]
         public void Employees_Login_Should_Return_OkResult()
         {
+            var employeeId = 10101;
             _mockEmployeeLogic.Setup(x => x.GetEmployee(It.IsAny<int>())).Returns(new EmployeeDto() { Forename = "Test" });
             _mockEmployeeLogic.Setup(x => x.AuthorizedEmployee(It.IsAny<EmployeeCredentialsDto>())).Returns(true);
 
-            var result = _classUnderTest.Login(It.IsAny<int>(), It.IsAny<EmployeeCredentialsDto>());
+            var result = _classUnderTest.Login(employeeId, new EmployeeCredentialsDto() { EmployeeId = employeeId });
             var okResult = result as OkObjectResult;
 
             Assert.IsNotNull(okResult);
@@ -61,9 +64,10 @@ namespace UnitTests.FirstCateringAPITest.ControllerTests
         [Test]
         public void Employees_Login_Should_Return_BadRequestResult_IfAuthFails()
         {
+            var employeeId = 10101;
             _mockEmployeeLogic.Setup(x => x.GetEmployee(It.IsAny<int>())).Returns(new EmployeeDto() { Forename = "Test" });
 
-            var result = _classUnderTest.Login(It.IsAny<int>(), It.IsAny<EmployeeCredentialsDto>());
+            var result = _classUnderTest.Login(employeeId, new EmployeeCredentialsDto() { EmployeeId = employeeId });
             var badResult = result as BadRequestObjectResult;
 
             Assert.IsNotNull(badResult);
@@ -73,10 +77,11 @@ namespace UnitTests.FirstCateringAPITest.ControllerTests
         [Test]
         public void Employees_Login_Should_Return_NotFoundResult_IfEmployeeNull()
         {
+            var employeeId = 10101;
             _mockEmployeeLogic.Setup(x => x.GetEmployee(It.IsAny<int>())).Returns(It.IsAny<EmployeeDto>());
             _mockEmployeeLogic.Setup(x => x.AuthorizedEmployee(It.IsAny<EmployeeCredentialsDto>())).Returns(false);
 
-            var result = _classUnderTest.Login(It.IsAny<int>(), It.IsAny<EmployeeCredentialsDto>());
+            var result = _classUnderTest.Login(employeeId, new EmployeeCredentialsDto() { EmployeeId = employeeId });
             var notFound = result as NotFoundObjectResult;
 
             Assert.IsNotNull(notFound);

@@ -59,7 +59,7 @@ namespace FirstCateringAPI.BusinessLogic.Implementations
             var employeeLinksWrapper = _mapper.Map<EmployeeLinksDto>(employee);
             employeeLinksWrapper.Links.Add(new LinkDto(_urlHelper.Link("GetEmployee", new { employeeId = employee.EmployeeId }), "self", "GET"));
             employeeLinksWrapper.Links.Add(new LinkDto(_urlHelper.Link("DeleteEmployee", new { employeeId = employee.EmployeeId }), "delete", "DELETE"));
-            employeeLinksWrapper.Links.Add(new LinkDto(_urlHelper.Link("GetMembershipCard", new { cardId = employee.CardId }), "membershipCard", "GET"));
+            employeeLinksWrapper.Links.Add(new LinkDto(_urlHelper.Link("GetMembershipCard", new { cardId = employee.CardId }), "employee-membershipCard", "GET"));
 
             return employeeLinksWrapper;
         }

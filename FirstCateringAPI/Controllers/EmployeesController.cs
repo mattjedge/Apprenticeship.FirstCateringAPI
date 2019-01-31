@@ -22,12 +22,24 @@ namespace FirstCateringAPI.Controllers
             _config = config;
         }
 
-        [HttpPost("{employeeId}/Login",Name ="Login")]
+
+        /// <summary>
+        /// Method used to return a login welcome object - { "welcome": "Welcome, EmployeeForename." }
+        /// </summary>
+        /// <param name="employeeId">The ID of the employee</param>
+        /// <param name="credentials">A json object containing EmployeeId, PINNumber, and CardID </param>
+        /// <response code="200"> Successful login</response>
+        /// <response code="404"> No employee with matching ID found</response>
+        /// <response code="400"> Unable to authenticate employee (PIN / ID don't match) || EmployeeId parameter and EmployeeId in credentials don't match.</response>
+        /// <returns></returns>
+        [HttpPost("{employeeId}/Login",Name ="Login")]       
+        [Produces("application/json")]
+        [ProducesResponseType(200), ProducesResponseType(400), ProducesResponseType(404)]
         public IActionResult Login(int employeeId, [FromBody]EmployeeCredentialsDto credentials)
         {          
             if (employeeId != credentials.EmployeeId)
             {
-                return BadRequest(new { message = "Credentials and ID don't match." });
+                return BadRequest(new { message = "Credentials EmployeeId and URI ID don't match." });
             }
 
             var employee = _employeeLogic.GetEmployee(employeeId);
@@ -50,8 +62,16 @@ namespace FirstCateringAPI.Controllers
             }
         }
         
-
-        [HttpPost("{employeeId}/Logout")]
+        /// <summary>
+        /// This method returns a personalised Goodbye object- { "farewell": "Goodbye, EmployeeForename" }.
+        /// </summary>
+        /// <param name="employeeId">The ID of the employee that wishes to log out.</param>
+        /// <response code="404"> No employee with matching ID found.</response>
+        /// <response code="200"> Logout message successful</response>
+        /// <returns></returns>
+        [HttpPost("{employeeId}/Logout")]        
+        [Produces("application/json")]
+        [ProducesResponseType(404), ProducesResponseType(200)]
         public IActionResult Logout(int employeeId)
         {
             var employee = _employeeLogic.GetEmployee(employeeId);
@@ -68,22 +88,23 @@ namespace FirstCateringAPI.Controllers
         }
         
 
+        /// <summary>
+        /// This method 
+        /// </summary>
+        /// <param name="contentType"></param>
+        /// <param name="acceptMediaTypes"> application/vnd.catering.hateoas+json will return an Employee object including links to
+        /// their membership card, self links, and delete links.</param>
+        /// <param name="employeeToRegister">This Json object must contain all employee details. See RegisterEmployeeDto object at the bottom of this page.</param>
+        /// <response code="201"></response>
+        /// <returns></returns>
         [HttpPost("Register",Name ="Register")]
-        [ProducesResponseType(typeof(EmployeeDto),201)]
-        [ProducesResponseType(400)]
-        [ProducesResponseType(401)]
-        public IActionResult Register([FromHeader(Name ="Content-Type")]string contentType, 
-            [FromHeader(Name ="Accept")]string acceptMediaTypes, 
-            [FromBody]RegisterEmployeeDto employeeToRegister)
+        [Produces("application/json", "application/vnd.catering.hateoas+json")]
+        [ProducesResponseType(typeof(EmployeeDto), 201), ProducesResponseType(400), ProducesResponseType(401)]
+        public IActionResult Register([FromHeader(Name ="Content-Type")]string contentType, [FromHeader(Name ="Accept")]string acceptMediaTypes, [FromBody]RegisterEmployeeDto employeeToRegister)
         {
             var hateoasHeader = _config.GetValue<string>("AppSettings:HateoasAcceptType");
             string[] acceptTypes = acceptMediaTypes.Split(", ");
-
-            //if (contentType != "application/json")
-            //{
-            //    return StatusCode(415); // unsupported mediatype, forcing consumer to use json (for simplicity)
-            //}
-
+            
             if (!ModelState.IsValid)
             {
                 return BadRequest(new { message = "Invalid model state."});
@@ -115,6 +136,7 @@ namespace FirstCateringAPI.Controllers
 
         [HttpGet("{employeeId}",Name ="GetEmployee")]
         [Produces("application/vnd.catering.hateoas+json", "application/json")]
+        [ProducesResponseType(typeof(EmployeeDto),200), ProducesResponseType(404)]
         public IActionResult GetEmployee([FromHeader(Name ="Accept")]string acceptMediaTypes, int employeeId)
         {
             var hateoasHeader = _config.GetValue<string>("application/vnd.catering.hateoas+json");
@@ -123,7 +145,7 @@ namespace FirstCateringAPI.Controllers
             if (employeeDto == null)
             {
                 return NotFound(new { message = $"No employee with Employee Id {employeeId} was found." });
-                }
+            }
 
             string[] acceptTypes = acceptMediaTypes.Split(", ");
 
@@ -138,7 +160,9 @@ namespace FirstCateringAPI.Controllers
             return Ok(employeeDto);
         }
 
+
         [HttpDelete("{employeeId}", Name = "DeleteEmployee")]
+        [ProducesResponseType(204), ProducesResponseType(404)]
         public IActionResult DeleteEmployee(int employeeId)
         {
             var employeeToDelete = _employeeLogic.GetEmployee(employeeId);

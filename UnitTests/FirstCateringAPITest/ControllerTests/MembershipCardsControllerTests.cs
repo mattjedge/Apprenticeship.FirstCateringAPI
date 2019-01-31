@@ -80,10 +80,11 @@ namespace UnitTests.FirstCateringAPITest.ControllerTests
         [Test]
         public void MembershipCards_AddCredit_Should_Return_BadRequest_If_ModelStateNotValid()
         {
+            var cardId = Guid.NewGuid();
             _mockConfiguration.Setup(x => x.GetSection(It.IsAny<string>())).Returns(new Mock<IConfigurationSection>().Object);
             _classUnderTest.ModelState.AddModelError("", "");
 
-            var result = _classUnderTest.AddCredit("", It.IsAny<UpdateBalanceDto>());
+            var result = _classUnderTest.AddCredit(cardId, "", new UpdateBalanceDto() { CardId = cardId});
             var objResult = result as BadRequestObjectResult;
 
             Assert.IsNotNull(objResult);
@@ -93,10 +94,11 @@ namespace UnitTests.FirstCateringAPITest.ControllerTests
         [Test]
         public void MembershipCards_AddCredit_Should_Return_NotFound_IfCardDoesntExist()
         {
+            var cardId = Guid.NewGuid();
             _mockConfiguration.Setup(x => x.GetSection(It.IsAny<string>())).Returns(new Mock<IConfigurationSection>().Object);
             _mockCardLogic.Setup(x => x.MembershipCardExists(It.IsAny<Guid>())).Returns(false);
 
-            var result = _classUnderTest.AddCredit("", new UpdateBalanceDto() { CardId = Guid.NewGuid() });
+            var result = _classUnderTest.AddCredit(cardId, "", new UpdateBalanceDto() { CardId = cardId });
             var objResult = result as NotFoundObjectResult;
 
             Assert.IsNotNull(objResult);
@@ -106,10 +108,11 @@ namespace UnitTests.FirstCateringAPITest.ControllerTests
         [Test]
         public void MembershipCards_AddCredit_Should_Call_Authenticated()
         {
+            var cardId = Guid.NewGuid();
             _mockConfiguration.Setup(x => x.GetSection(It.IsAny<string>())).Returns(new Mock<IConfigurationSection>().Object);
             _mockCardLogic.Setup(x => x.MembershipCardExists(It.IsAny<Guid>())).Returns(true);
 
-            _classUnderTest.AddCredit("", new UpdateBalanceDto() { CardId = Guid.NewGuid() });
+            _classUnderTest.AddCredit(cardId, "", new UpdateBalanceDto() { CardId = cardId });
 
             _mockCardLogic.Verify(x => x.Authenticated(It.IsAny<string>(), It.IsAny<Guid>()), Times.Once);
         }
@@ -117,10 +120,11 @@ namespace UnitTests.FirstCateringAPITest.ControllerTests
         [Test]
         public void MembershipCards_AddCredit_Should_Return_Unauthorized_IfAuthorizedFails()
         {
+            var cardId = Guid.NewGuid();
             _mockConfiguration.Setup(x => x.GetSection(It.IsAny<string>())).Returns(new Mock<IConfigurationSection>().Object);
             _mockCardLogic.Setup(x => x.MembershipCardExists(It.IsAny<Guid>())).Returns(true);
 
-            var result = _classUnderTest.AddCredit("", new UpdateBalanceDto() { CardId = Guid.NewGuid() });
+            var result = _classUnderTest.AddCredit(cardId, "", new UpdateBalanceDto() { CardId = cardId });
 
             Assert.IsInstanceOf<UnauthorizedResult>(result);
         }
@@ -128,12 +132,13 @@ namespace UnitTests.FirstCateringAPITest.ControllerTests
         [Test]
         public void MembershipCards_AddCredit_Should_Call_AddCredit()
         {
+            var cardId = Guid.NewGuid();
             _mockConfiguration.Setup(x => x.GetSection(It.IsAny<string>())).Returns(new Mock<IConfigurationSection>().Object);
             _mockCardLogic.Setup(x => x.MembershipCardExists(It.IsAny<Guid>())).Returns(true);
             _mockCardLogic.Setup(x => x.Authenticated(It.IsAny<string>(), It.IsAny<Guid>())).Returns(true);
             _mockCardLogic.Setup(x => x.Save()).Returns(true);
 
-            var result = _classUnderTest.AddCredit("", new UpdateBalanceDto() { CardId = Guid.NewGuid(), PINNumber = "0000" });
+            var result = _classUnderTest.AddCredit(cardId, "", new UpdateBalanceDto() { CardId = cardId, PINNumber = "0000" });
 
             _mockCardLogic.Verify(x => x.AddCredit(It.IsAny<UpdateBalanceDto>()), Times.Once);
         }
@@ -141,12 +146,13 @@ namespace UnitTests.FirstCateringAPITest.ControllerTests
         [Test]
         public void MembershipCards_AddCredit_Should_Call_Save()
         {
+            var cardId = Guid.NewGuid();
             _mockConfiguration.Setup(x => x.GetSection(It.IsAny<string>())).Returns(new Mock<IConfigurationSection>().Object);
             _mockCardLogic.Setup(x => x.MembershipCardExists(It.IsAny<Guid>())).Returns(true);
             _mockCardLogic.Setup(x => x.Authenticated(It.IsAny<string>(), It.IsAny<Guid>())).Returns(true);
             _mockCardLogic.Setup(x => x.Save()).Returns(true);
 
-            var result = _classUnderTest.AddCredit("", new UpdateBalanceDto() { CardId = Guid.NewGuid(), PINNumber = "0000"});
+            var result = _classUnderTest.AddCredit(cardId, "", new UpdateBalanceDto() { CardId = cardId, PINNumber = "0000"});
 
             _mockCardLogic.Verify(x => x.Save(), Times.Once);
         }
@@ -154,23 +160,25 @@ namespace UnitTests.FirstCateringAPITest.ControllerTests
         [Test]
         public void MembershipCards_AddCredit_Should_ThrowException_IfSaveFails()
         {
+            var cardId = Guid.NewGuid();
             _mockConfiguration.Setup(x => x.GetSection(It.IsAny<string>())).Returns(new Mock<IConfigurationSection>().Object);
             _mockCardLogic.Setup(x => x.MembershipCardExists(It.IsAny<Guid>())).Returns(true);
             _mockCardLogic.Setup(x => x.Authenticated(It.IsAny<string>(), It.IsAny<Guid>())).Returns(true);
             _mockCardLogic.Setup(x => x.Save()).Returns(false);
 
-            Assert.That(() => _classUnderTest.AddCredit("", new UpdateBalanceDto() { CardId = Guid.NewGuid(), PINNumber = "0000" }),Throws.Exception);
+            Assert.That(() => _classUnderTest.AddCredit(cardId, "", new UpdateBalanceDto() { CardId = cardId, PINNumber = "0000" }),Throws.Exception);
         }
 
         [Test]
         public void MembershipCards_AddCredit_Should_CallGetMembershipCard()
         {
+            var cardId = Guid.NewGuid();
             _mockConfiguration.Setup(x => x.GetSection(It.IsAny<string>())).Returns(new Mock<IConfigurationSection>().Object);
             _mockCardLogic.Setup(x => x.MembershipCardExists(It.IsAny<Guid>())).Returns(true);
             _mockCardLogic.Setup(x => x.Authenticated(It.IsAny<string>(), It.IsAny<Guid>())).Returns(true);
             _mockCardLogic.Setup(x => x.Save()).Returns(true);
 
-            _classUnderTest.AddCredit("", new UpdateBalanceDto() { CardId = Guid.NewGuid(), PINNumber = "0000" });
+            _classUnderTest.AddCredit(cardId, "", new UpdateBalanceDto() { CardId = cardId, PINNumber = "0000" });
 
             _mockCardLogic.Verify(x => x.GetMembershipCard(It.IsAny<Guid>()), Times.Once);
         }
@@ -178,18 +186,28 @@ namespace UnitTests.FirstCateringAPITest.ControllerTests
         [Test]
         public void MembershipCards_AddCredit_Should_Return_OkResult()
         {
+            var cardId = Guid.NewGuid();
             _mockConfiguration.Setup(x => x.GetSection(It.IsAny<string>())).Returns(new Mock<IConfigurationSection>().Object);
             _mockCardLogic.Setup(x => x.MembershipCardExists(It.IsAny<Guid>())).Returns(true);
             _mockCardLogic.Setup(x => x.Authenticated(It.IsAny<string>(), It.IsAny<Guid>())).Returns(true);
             _mockCardLogic.Setup(x => x.Save()).Returns(true);            
 
-            var result =_classUnderTest.AddCredit("", new UpdateBalanceDto() { CardId = Guid.NewGuid(), PINNumber = "0000" });
+            var result =_classUnderTest.AddCredit(cardId, "", new UpdateBalanceDto() { CardId = cardId, PINNumber = "0000" });
             var objResult = result as OkObjectResult;
 
             Assert.IsNotNull(objResult);
             Assert.AreEqual(200, objResult.StatusCode);
         }
 
+        [Test]
+        public void MembershipCards_AddCredit_Should_Return_BadRequest_IfURICardIdAndUpdateBalanceCardIdDontMatch()
+        {
+            var result = _classUnderTest.AddCredit(Guid.NewGuid(), "", new UpdateBalanceDto() { CardId = Guid.NewGuid(), PINNumber = "0000" });
+            var objResult = result as BadRequestObjectResult;
+
+            Assert.IsNotNull(objResult);
+            Assert.AreEqual(400, objResult.StatusCode);
+        }
 
 
         // GET MEMBERSHIP CARD TESTS
