@@ -47,10 +47,12 @@ namespace FirstCateringAPI
                     ValidateIssuer = true,
                     ValidateAudience = true,
                     ValidateIssuerSigningKey = true,
+                    ValidateLifetime = true,
 
                     ValidIssuer = validIssuer,
                     ValidAudience = validAudience,
-                    IssuerSigningKey = symmetricSecurityKey
+                    IssuerSigningKey = symmetricSecurityKey,
+                   
                 };
             });
 

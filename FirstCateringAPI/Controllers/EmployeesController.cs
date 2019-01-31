@@ -24,7 +24,12 @@ namespace FirstCateringAPI.Controllers
 
         [HttpPost("{employeeId}/Login",Name ="Login")]
         public IActionResult Login(int employeeId, [FromBody]EmployeeCredentialsDto credentials)
-        {
+        {          
+            if (employeeId != credentials.EmployeeId)
+            {
+                return BadRequest(new { message = "Credentials and ID don't match." });
+            }
+
             var employee = _employeeLogic.GetEmployee(employeeId);
             
             if (employee == null)
@@ -81,7 +86,7 @@ namespace FirstCateringAPI.Controllers
 
             if (!ModelState.IsValid)
             {
-                return BadRequest();
+                return BadRequest(new { message = "Invalid model state."});
             }
 
             if (_employeeLogic.EmployeeIdExists(employeeToRegister.EmployeeId))

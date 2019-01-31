@@ -34,7 +34,7 @@ namespace FirstCateringAPI.Controllers
 
             if (!_cardLogic.MembershipCardExists(cardId))
             {
-                return NotFound(new { message = "Membership card not found." });
+                return NotFound(new { message = "Membership card not found, please register." });
             }
 
             var cardAndOwner = _cardLogic.GetCardAndOwnerId(cardId);
@@ -53,12 +53,17 @@ namespace FirstCateringAPI.Controllers
         [ProducesResponseType(typeof(MembershipCardDto),200)]
         [ProducesResponseType(404)]
         [Produces("application/json", "application/vnd.catering.hateoas+json")]
-        public IActionResult AddCredit([FromHeader(Name ="Accept")]string acceptType, [FromBody]UpdateBalanceDto credit)
+        public IActionResult AddCredit(Guid cardId, [FromHeader(Name ="Accept")]string acceptType, [FromBody]UpdateBalanceDto credit)
         {
+            if (credit.CardId != cardId)
+            {
+                return BadRequest();
+            }
+
             var hateoasHeader = _config.GetValue<string>("AppSettings:HateoasAcceptType");
             var acceptTypes = acceptType.Split(", ");
 
-            if (credit == null)
+            if (!ModelState.IsValid)
             {
                 return BadRequest(new { message = "Unable to process body." });
             }
@@ -68,11 +73,11 @@ namespace FirstCateringAPI.Controllers
                 return NotFound(new { message = "Membership card not found." });
             }
 
-
-            // check employee id and pin no match (not authorized)
-            // ?????
-
-            // update credit
+            if (!_cardLogic.Authenticated(credit.PINNumber, credit.CardId))
+            {
+                return Unauthorized();
+            }
+            
             _cardLogic.AddCredit(credit);
            
             if (!_cardLogic.Save())

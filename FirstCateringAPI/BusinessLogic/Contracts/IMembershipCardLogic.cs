@@ -16,5 +16,7 @@ namespace FirstCateringAPI.BusinessLogic.Contracts
         MembershipCardDto GetMembershipCard(Guid cardId);
 
         void AddCredit(UpdateBalanceDto membershipCard);
+
+        bool Authenticated(string pinNumber, Guid cardId);
     }
 }

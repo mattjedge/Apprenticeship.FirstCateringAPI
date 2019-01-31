@@ -32,6 +32,7 @@ namespace FirstCateringAPI.BusinessLogic.Implementations
             var securityKey = _config.GetValue<string>("AppSettings:Secrets:SecurityKey");
             var validIssuer = _config.GetValue<string>("AppSettings:Secrets:ValidIssuer");
             var validAudience = _config.GetValue<string>("AppSettings:Secrets:ValidAudience");
+           // var tokenExpires = _config.GetValue<int>("AppSettings:TokenTimeout");
 
             var symmetricSecurityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(securityKey));
 
@@ -45,7 +46,7 @@ namespace FirstCateringAPI.BusinessLogic.Implementations
             var token = new JwtSecurityToken(
                 issuer: validIssuer,
                 audience: validAudience,
-                //expires: DateTime.Now.AddHours(1),
+                //expires: DateTime.Now.AddMinutes(tokenExpires),
                 expires: DateTime.Now.AddMonths(1), // setting expiration to one month for testing purposes.
                 claims: claims,
                 signingCredentials: signingCredentials);

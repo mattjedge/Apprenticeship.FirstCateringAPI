@@ -4,6 +4,7 @@ using FirstCateringAPI.Core.Dtos.Cards;
 using FirstCateringAPI.Core.Dtos.LinksAndWrappers;
 using FirstCateringAPI.DataAccess.Contracts;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
 using System;
 
 namespace FirstCateringAPI.BusinessLogic.Implementations
@@ -11,14 +12,18 @@ namespace FirstCateringAPI.BusinessLogic.Implementations
     public class MembershipCardLogic : BaseLogic, IMembershipCardLogic
     {
         private readonly IMembershipCardsRepo _repo;
+        private readonly IEncryption _encryption;
         private readonly IMapper _mapper;
         private readonly IUrlHelper _urlHelper;
+        private readonly IConfiguration _configuration;
 
-        public MembershipCardLogic(IMembershipCardsRepo repo, IMapper mapper, IUrlHelper urlHelper) : base(repo)
+        public MembershipCardLogic(IMembershipCardsRepo repo, IEncryption encrypt, IMapper mapper, IUrlHelper urlHelper, IConfiguration configuration) : base(repo)
         {
             _repo = repo;
+            _encryption = encrypt;
             _mapper = mapper;
             _urlHelper = urlHelper;
+            _configuration = configuration;
         }
 
         public MembershipCardOwnerLinksDto AddHateoasLinks(MembershipCardOwnerDto cardAndOwner)
@@ -69,6 +74,20 @@ namespace FirstCateringAPI.BusinessLogic.Implementations
             membershipCard.CurrentBalance += updateBalanceDto.Credit;
 
             _repo.UpdateMembershipCard(membershipCard);
+        }
+
+        public bool Authenticated(string pinNumber, Guid cardId)
+        {
+            var pinEncryptKey = _configuration.GetValue<string>("AppSettings:Secrets:PinEncryptKey");
+
+            var encryptedPin = _repo.GetCardOwner(cardId).PINNumber;
+            var decryptedPin = _encryption.DecryptString(encryptedPin, pinEncryptKey);
+
+            if (pinNumber == decryptedPin)
+            {
+                return true;
+            }
+            else return false;
         }
     }
 }
