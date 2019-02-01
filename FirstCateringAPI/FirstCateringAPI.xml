@@ -6,19 +6,23 @@
     <members>
         <member name="M:FirstCateringAPI.Controllers.AuthController.GetToken">
             <summary>
-            User sends basic authorization header to generate a JwtBearer token which expires in one hour. Token is used for authentication for the rest of the end-points.
+            User sends basic authorization header to generate a JwtBearer token which expires in 15 minutes. 
+            The token is used as authentication for the rest of the end-points, so this should always be the first
+            call to the API. The call will return unauthorized unless Basic authorization is supplied. The token is
+            sent in a JSON object, { "token": "generatedToken" }. 
             </summary>
+            <response code="200">Authorized, token in body</response>
+            <response code="401">Unauthorized, basic auth not provided or credentials incorrect</response>
         </member>
         <member name="M:FirstCateringAPI.Controllers.EmployeesController.Login(System.Int32,FirstCateringAPI.Core.Dtos.Employees.EmployeeCredentialsDto)">
             <summary>
-            Method used to return a login welcome object - { "welcome": "Welcome, EmployeeForename." }
+            This method is used to return a login welcome object - { "welcome": "Welcome, EmployeeForename." }  
             </summary>
             <param name="employeeId">The ID of the employee</param>
-            <param name="credentials">A json object containing EmployeeId, PINNumber, and CardID </param>
+            <param name="credentials">A json object containing EmployeeId (integer), PINNumber (4 digit string), and CardID (guid) </param>
             <response code="200"> Successful login</response>
             <response code="404"> No employee with matching ID found</response>
-            <response code="400"> Unable to authenticate employee (PIN / ID don't match) || EmployeeId parameter and EmployeeId in credentials don't match.</response>
-            <returns></returns>
+            <response code="400"> Unable to authenticate employee (PIN / ID don't match) || EmployeeId in path and EmployeeId in credentials don't match.</response>
         </member>
         <member name="M:FirstCateringAPI.Controllers.EmployeesController.Logout(System.Int32)">
             <summary>
@@ -27,18 +31,71 @@
             <param name="employeeId">The ID of the employee that wishes to log out.</param>
             <response code="404"> No employee with matching ID found.</response>
             <response code="200"> Logout message successful</response>
-            <returns></returns>
         </member>
         <member name="M:FirstCateringAPI.Controllers.EmployeesController.Register(System.String,System.String,FirstCateringAPI.Core.Dtos.Employees.RegisterEmployeeDto)">
             <summary>
-            This method 
+            This method is used to register employees and their membership cards into the system. You can request HATEOAS links by including
+            the Accept header application/vnd.catering.hateoas+json. This will include a new links property to the returned EmployeeDto object,
+            offering navigational links to self, delete, and the employee's membership card.
             </summary>
             <param name="contentType"></param>
             <param name="acceptMediaTypes"> application/vnd.catering.hateoas+json will return an Employee object including links to
             their membership card, self links, and delete links.</param>
-            <param name="employeeToRegister">This Json object must contain all employee details. See RegisterEmployeeDto object at the bottom of this page.</param>
+            <param name="employeeToRegister">This Json object must contain all employee details. See RegisterEmployeeDto object at the bottom of this page for required fields.</param>
             <response code="201"></response>
-            <returns></returns>
+        </member>
+        <member name="M:FirstCateringAPI.Controllers.EmployeesController.GetEmployee(System.String,System.Int32)">
+            <summary>
+            Used to GET an employee from the database. You can request HATEOAS links by including
+            the Accept header application/vnd.catering.hateoas+json. This will include a new links property to the returned EmployeeDto object,
+            offering navigational links to self, delete, and the employee's membership card.
+            </summary>
+            <param name="acceptMediaTypes">application/vnd.catering.hateoas+json will return an Employee object including links to
+            their membership card, self links, and delete links.</param>
+            <param name="employeeId">The EmployeeID of the Employee you wish to retrieve.</param>
+            <response code="200"> Response Ok, JSON EmployeeDto returned.</response>
+            <response code="404"> Not found, couldn't find employee with matching ID in system.</response>
+        </member>
+        <member name="M:FirstCateringAPI.Controllers.EmployeesController.DeleteEmployee(System.Int32)">
+            <summary>
+            Called to delete an employee from the database.
+            </summary>
+            <param name="employeeId">ID of the employee you wish to delete.</param>
+            <response code="204">No content, employee successfully deleted from system.</response>
+            <response code="404">Not found, could not find employee with matching EmployeeId.</response>
+        </member>
+        <member name="M:FirstCateringAPI.Controllers.MembershipCardsController.VerifyCard(System.String,System.Guid)">
+            <summary>
+            Called to verify whether the card already exists in the system. Should be called before Login.
+            Returns a MembershipCardOwnerDto which includes the cardID and employeeId (which can then be used for Login).
+            </summary>
+            <param name="acceptHeader"> Including the hateoas Accept header (application/vnd.catering.hateoas+json)
+            in your request will include a links property in the response body, with the URI needed to Login the employee.</param>
+            <param name="cardId">The guid contained on the membership card.</param>
+            <response code="404"> Not found, no card registered with matching Card Id [perform Employees/Register]</response>
+            <response code="200"> Ok, card found in system. Proceed to login.</response>
+        </member>
+        <member name="M:FirstCateringAPI.Controllers.MembershipCardsController.AddCredit(System.Guid,System.String,FirstCateringAPI.Core.Dtos.Cards.UpdateBalanceDto)">
+            <summary>
+            Called to add credit to a membership card. Ensure that card id in the URI path and the request body match.#
+            
+            </summary>
+            <param name="cardId">The Guid contained on the card.</param>
+            <param name="acceptType">Including the hateoas accept type will include useful resource links in the response body.</param>
+            <param name="credit">An object containing CardId (guid), Credit (the amount to add to the card), and the employees inputted PIN number.</param>
+            <response code="200">Ok, credit added and card object returned</response>
+            <response code="400">Bad request, path and body cardIds don't match, or request body not valid</response>
+            <response code="404">Not found, card with matching ID not found in system.</response>
+            <response code="401">Unauthorized, supplied PIN number does not match stored PIN.</response>
+        </member>
+        <member name="M:FirstCateringAPI.Controllers.MembershipCardsController.GetMembershipCard(System.String,System.Guid)">
+            <summary>
+            Used to retrieve a membership card from the database.
+            </summary>
+            <param name="acceptType">Including the HATEOAS accept type will return links to the card owner resource and add credit end-points.</param>
+            <param name="cardId">The CardId guid you wish to access.</param>
+            <response code="200">Ok, Membership Card retrieved.</response>
+            <response code="404">Not found, no card with matching card ID found in system.</response>
         </member>
     </members>
 </doc>

@@ -8,7 +8,6 @@ namespace FirstCateringAPI.Core.Dtos.Cards
                
         public decimal CurrentBalance { get; set; }
 
-        public int EmployeeId { get; set; }
-        
+        public int EmployeeId { get; set; }        
     }
 }

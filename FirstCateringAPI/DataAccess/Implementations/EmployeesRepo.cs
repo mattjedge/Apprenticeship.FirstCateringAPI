@@ -1,5 +1,4 @@
-﻿using FirstCateringAPI.BusinessLogic.Contracts;
-using FirstCateringAPI.Core.Context;
+﻿using FirstCateringAPI.Core.Context;
 using FirstCateringAPI.Core.Entities;
 using FirstCateringAPI.DataAccess.Contracts;
 using Microsoft.EntityFrameworkCore;

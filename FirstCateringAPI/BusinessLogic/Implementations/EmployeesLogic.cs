@@ -6,7 +6,6 @@ using FirstCateringAPI.Core.Entities;
 using FirstCateringAPI.DataAccess.Contracts;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
-using System;
 
 namespace FirstCateringAPI.BusinessLogic.Implementations
 {

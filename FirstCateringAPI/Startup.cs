@@ -51,6 +51,7 @@ namespace FirstCateringAPI
                     ValidateAudience = true,
                     ValidateIssuerSigningKey = true,
                     ValidateLifetime = true,
+                    ClockSkew = TimeSpan.Zero,                                     
 
                     ValidIssuer = validIssuer,
                     ValidAudience = validAudience,
@@ -72,16 +73,29 @@ namespace FirstCateringAPI
             services.AddSwaggerGen(setup =>
             {
                 setup.SwaggerDoc(
-                    "FirstCateringLtd", new Info
+                    "FirstCateringLtdV1", new Info
                     {
                         Title = "First Catering Ltd API",
                         Description = "A common web service for First Catering Ltd that allows Bows Formula One employees " +
-                                         "to use their cards in the existing kiosks to register and top up with money."      
+                                         "to use their cards in the existing kiosks to register and top up with money."    +
+                                         Environment.NewLine + Environment.NewLine +
+                                         "All endpoints begin with https://localhost:44340/api/" +                                         
+                                         Environment.NewLine + Environment.NewLine +
+                                         "To access the API you must first send your username and password with a basic authorization header to Auth/Token. " +
+                                         "This will generate a JwtBearer token (with a 15 minute expiration) that you must send in the authorization header with each subsequent request." +
+                                         Environment.NewLine + Environment.NewLine +
+                                         "To deal with a user first scanning their card, begin by calling MembershipCards/{CardId}/Verify, " +
+                                         "which will check whether the card exists in the system. If it does, go on to call Employees/{EmployeeID}/Login; otherwise, " +
+                                         "Employees/Register will register a new employee and their membership card into the system." +
+                                         Environment.NewLine + Environment.NewLine +
+                                         "When accessing resources, you can specify whether you want the response body to include " +
+                                         "HATEOAS navigational links by including the hateoas header - application/vnd.catering.hateoas+json." +
+                                         "Responses will otherwise be returned in JSON."
                     });
 
+                //enable swagger comments
                 var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.XML";
                 var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
-
                 setup.IncludeXmlComments(xmlPath);
             });
 
@@ -133,12 +147,11 @@ namespace FirstCateringAPI
                     });
                 });
             }
-
             app.UseSwagger();
             app.UseSwaggerUI(setupAction =>
             {
-                setupAction.SwaggerEndpoint("/swagger/FirstCateringLtd/swagger.json", "FirstCateringLtd");
-                setupAction.RoutePrefix = string.Empty;
+                setupAction.SwaggerEndpoint("/swagger/FirstCateringLtdV1/swagger.json", "FirstCateringLtdV1");
+                setupAction.RoutePrefix = String.Empty;
                 setupAction.SupportedSubmitMethods();
             });
 

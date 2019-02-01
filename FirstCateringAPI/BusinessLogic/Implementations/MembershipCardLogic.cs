@@ -17,7 +17,8 @@ namespace FirstCateringAPI.BusinessLogic.Implementations
         private readonly IUrlHelper _urlHelper;
         private readonly IConfiguration _configuration;
 
-        public MembershipCardLogic(IMembershipCardsRepo repo, IEncryption encrypt, IMapper mapper, IUrlHelper urlHelper, IConfiguration configuration) : base(repo)
+        public MembershipCardLogic(IMembershipCardsRepo repo, IEncryption encrypt, IMapper mapper, IUrlHelper urlHelper, 
+            IConfiguration configuration) : base(repo)
         {
             _repo = repo;
             _encryption = encrypt;
@@ -32,8 +33,7 @@ namespace FirstCateringAPI.BusinessLogic.Implementations
 
             cardAndOwnerLinks.Links.Add(new LinkDto(_urlHelper.Link("Login", new { employeeId = cardAndOwner.EmployeeId}),"login","POST"));
             
-            return cardAndOwnerLinks;
-            
+            return cardAndOwnerLinks;            
         }
 
 
@@ -59,8 +59,10 @@ namespace FirstCateringAPI.BusinessLogic.Implementations
         public MembershipCardDto GetMembershipCard(Guid cardId)
         {           
             var membershipCard = _repo.GetMembershipCard(cardId);
+            var cardToReturn = _mapper.Map<MembershipCardDto>(membershipCard);
+            cardToReturn.EmployeeId = _repo.GetCardOwner(cardId).EmployeeId;
 
-            return _mapper.Map<MembershipCardDto>(membershipCard);
+            return cardToReturn;
         }
 
 

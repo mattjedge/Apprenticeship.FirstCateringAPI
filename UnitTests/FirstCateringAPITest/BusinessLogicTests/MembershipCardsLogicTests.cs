@@ -46,7 +46,5 @@ namespace UnitTests.FirstCateringAPITest.BusinessLogicTests
 
             _mockUrlHelper.Verify(x => x.Link(It.IsAny<string>(), new { }), Times.Once);
         }
-
-
     }
 }

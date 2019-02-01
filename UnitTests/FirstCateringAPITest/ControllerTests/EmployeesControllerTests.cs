@@ -16,13 +16,14 @@ namespace UnitTests.FirstCateringAPITest.ControllerTests
         {
             _mockConfiguration = new Mock<IConfiguration>();
             _mockEmployeeLogic = new Mock<IEmployeesLogic>();
-            _classUnderTest = new EmployeesController(_mockEmployeeLogic.Object, _mockConfiguration.Object);
+            _mockCardLogic = new Mock<IMembershipCardLogic>();
+            _classUnderTest = new EmployeesController(_mockEmployeeLogic.Object, _mockCardLogic.Object, _mockConfiguration.Object);
         }
 
         public EmployeesController _classUnderTest;
         public Mock<IConfiguration> _mockConfiguration;
         public Mock<IEmployeesLogic> _mockEmployeeLogic;
-
+        public Mock<IMembershipCardLogic> _mockCardLogic;
 
         // LOGIN TESTS
         [Test]

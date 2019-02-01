@@ -23,8 +23,13 @@ namespace FirstCateringAPI.Controllers
 
 
         /// <summary>
-        /// User sends basic authorization header to generate a JwtBearer token which expires in one hour. Token is used for authentication for the rest of the end-points.
+        /// User sends basic authorization header to generate a JwtBearer token which expires in 15 minutes. 
+        /// The token is used as authentication for the rest of the end-points, so this should always be the first
+        /// call to the API. The call will return unauthorized unless Basic authorization is supplied. The token is
+        /// sent in a JSON object, { "token": "generatedToken" }. 
         /// </summary>
+        /// <response code="200">Authorized, token in body</response>
+        /// <response code="401">Unauthorized, basic auth not provided or credentials incorrect</response>
         [HttpPost("Token")]
         [ProducesResponseType(200),ProducesResponseType(401)]
         public IActionResult GetToken()
